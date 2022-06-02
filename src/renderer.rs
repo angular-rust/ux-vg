@@ -145,7 +145,7 @@ pub trait Renderer {
 
     /// Alloc image
     fn alloc_image(&mut self, info: ImageInfo) -> Result<Self::Image, ErrorKind>;
-    
+
     /// Update image
     fn update_image(&mut self, image: &mut Self::Image, data: ImageSource, x: usize, y: usize)
         -> Result<(), ErrorKind>;
@@ -161,13 +161,13 @@ pub trait Renderer {
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd, Default)]
 #[repr(C)]
 pub struct Vertex {
-    /// Represents x 
+    /// Represents x
     pub x: f32,
-    /// Represents y 
+    /// Represents y
     pub y: f32,
-    /// Represents u 
+    /// Represents u
     pub u: f32,
-    /// Represents v 
+    /// Represents v
     pub v: f32,
 }
 

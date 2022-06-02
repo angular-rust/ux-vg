@@ -61,8 +61,8 @@ pub fn normalize(x: &mut f32, y: &mut f32) -> f32 {
     d
 }
 
-/// 2×3 matrix (2 rows, 3 columns) used for 2D linear transformations. 
-/// 
+/// 2×3 matrix (2 rows, 3 columns) used for 2D linear transformations.
+///
 /// It can represent transformations such as translation, rotation, or scaling.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serialization", derive(Serialize, Deserialize))]

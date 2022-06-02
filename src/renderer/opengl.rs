@@ -105,16 +105,16 @@ impl OpenGl {
         let main_program = MainProgram::new(&context, antialias)?;
 
         let mut opengl = OpenGl {
-            debug: debug,
-            antialias: antialias,
+            debug,
+            antialias,
             is_opengles_2_0: false,
             view: [0.0, 0.0],
             screen_view: [0.0, 0.0],
-            main_program: main_program,
+            main_program,
             vert_arr: Default::default(),
             vert_buff: Default::default(),
             framebuffers: Default::default(),
-            context: context.clone(),
+            context,
             screen_target: None,
             current_render_target: RenderTarget::Screen,
         };
@@ -383,7 +383,7 @@ impl OpenGl {
 
         let tex = image_tex
             .and_then(|id| images.get(id))
-            .map_or(None, |tex| Some(tex.id()));
+            .map(|tex| tex.id());
 
         unsafe {
             self.context.active_texture(glow::TEXTURE0);

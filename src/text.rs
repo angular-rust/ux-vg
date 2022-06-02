@@ -204,8 +204,8 @@ pub(crate) struct FontTexture {
     pub(crate) image_id: ImageId,
 }
 
-/// TextContext provides functionality for text processing in VG. 
-/// 
+/// TextContext provides functionality for text processing in VG.
+///
 /// You can /// add fonts using the [`Self::add_font_file()`], [`Self::add_font_mem()`] and
 /// [`Self::add_font_dir()`] functions. For each registered font a [`FontId`] is
 /// returned.
@@ -220,14 +220,8 @@ pub(crate) struct FontTexture {
 /// parameter. If you need measurements that take a [`crate::Canvas`]'s transform or dpi into
 /// account (see [`crate::Canvas::set_size()`]), you need to use the measurement functions
 /// on the canvas.
-#[derive(Clone)]
+#[derive(Default, Clone)]
 pub struct TextContext(pub(crate) Rc<RefCell<TextContextImpl>>);
-
-impl Default for TextContext {
-    fn default() -> Self {
-        Self(Default::default())
-    }
-}
 
 impl TextContext {
     /// Registers all .ttf files from a directory with this text context. If successful, the
@@ -322,12 +316,10 @@ impl TextContextImpl {
 
                 if path.is_dir() {
                     self.add_font_dir(&path)?;
-                } else {
-                    if let Some("ttf") = path.extension().and_then(OsStr::to_str) {
-                        fonts.push(self.add_font_file(path)?);
-                    } else if let Some("ttc") = path.extension().and_then(OsStr::to_str) {
-                        fonts.extend(self.add_font_file_collection(path)?);
-                    }
+                } else if let Some("ttf") = path.extension().and_then(OsStr::to_str) {
+                    fonts.push(self.add_font_file(path)?);
+                } else if let Some("ttc") = path.extension().and_then(OsStr::to_str) {
+                    fonts.extend(self.add_font_file_collection(path)?);
                 }
             }
         }
@@ -348,7 +340,7 @@ impl TextContextImpl {
         let data = std::fs::read(path)?;
 
         let count = ttf_parser::fonts_in_collection(&data).unwrap_or(1);
-        Ok((0..count).filter_map(move |index| Some(self.add_font_mem_with_index(&data, index).ok()?)))
+        Ok((0..count).filter_map(move |index| self.add_font_mem_with_index(&data, index).ok()))
     }
 
     pub fn add_font_mem(&mut self, data: &[u8]) -> Result<FontId, ErrorKind> {
@@ -429,7 +421,7 @@ impl TextContextImpl {
         text: S,
         paint: Paint,
     ) -> Result<TextMetrics, ErrorKind> {
-        Ok(shape(x, y, self, &paint, text.as_ref(), None)?)
+        shape(x, y, self, &paint, text.as_ref(), None)
     }
 
     pub fn break_text<S: AsRef<str>>(&mut self, max_width: f32, text: S, paint: Paint) -> Result<usize, ErrorKind> {
@@ -562,12 +554,12 @@ fn shape_run(
         final_byte_index: 0,
     };
 
-    let bidi_info = BidiInfo::new(&text, Some(unicode_bidi::Level::ltr()));
+    let bidi_info = BidiInfo::new(text, Some(unicode_bidi::Level::ltr()));
 
     if let Some(paragraph) = bidi_info.paragraphs.get(0) {
         let line = paragraph.range.clone();
 
-        let (levels, runs) = bidi_info.visual_runs(&paragraph, line);
+        let (levels, runs) = bidi_info.visual_runs(paragraph, line);
 
         for run in runs.iter() {
             let sub_text = &text[run.clone()];
@@ -653,7 +645,7 @@ fn shape_word(
             buffer.push_str(word);
             buffer.set_direction(hb_direction);
 
-            rustybuzz::shape(&face, &[], buffer)
+            rustybuzz::shape(face, &[], buffer)
         };
 
         let positions = output.glyph_positions();
@@ -676,9 +668,9 @@ fn shape_word(
             let mut g = ShapedGlyph {
                 x: 0.0,
                 y: 0.0,
-                c: c,
+                c,
                 byte_index: info.cluster as usize,
-                font_id: font_id,
+                font_id,
                 codepoint: info.glyph_id,
                 width: 0.0,
                 height: 0.0,
@@ -829,7 +821,7 @@ impl GlyphAtlas {
             let id = RenderedGlyphId::new(glyph.codepoint, glyph.font_id, paint, mode, subpixel_location as u8);
 
             if !self.rendered_glyphs.borrow().contains_key(&id) {
-                let glyph = self.render_glyph(canvas, paint, mode, &glyph)?;
+                let glyph = self.render_glyph(canvas, paint, mode, glyph)?;
 
                 self.rendered_glyphs.borrow_mut().insert(id, glyph);
             }
@@ -1012,7 +1004,7 @@ impl GlyphAtlas {
 
                 let image_buffer =
                     image_buffer.resize(target_width, target_height, image::imageops::FilterType::Nearest);
-                if let Some(image) = crate::image::ImageSource::try_from(&image_buffer).ok() {
+                if let Ok(image) = crate::image::ImageSource::try_from(&image_buffer) {
                     canvas.update_image(dst_image_id, image, target_x, target_y).unwrap();
                 }
             }
@@ -1170,11 +1162,11 @@ pub(crate) fn render_direct<T: Renderer>(
         canvas.scale(scale * invscale, -scale * invscale);
 
         match glyph_rendering {
-            GlyphRendering::RenderAsPath(mut path) => {
+            GlyphRendering::RenderAsPath(path) => {
                 if mode == RenderMode::Stroke {
-                    canvas.stroke_path(&mut path, paint);
+                    canvas.stroke_path(path, paint);
                 } else {
-                    canvas.fill_path(&mut path, paint);
+                    canvas.fill_path(path, paint);
                 }
             }
             #[cfg(feature = "image-loading")]

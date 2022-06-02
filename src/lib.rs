@@ -1,15 +1,25 @@
 // #![doc(html_logo_url = "https://dudochkin-victor.github.io/assets/ux-primitives/logo.svg")]
 
 #![warn(missing_docs)]
-
+#![allow(
+    clippy::too_many_arguments,
+    clippy::large_enum_variant,
+    clippy::comparison_chain,
+    clippy::derive_ord_xor_partial_ord,
+    clippy::search_is_some,
+    clippy::unnecessary_to_owned,
+    clippy::needless_range_loop,
+    clippy::manual_map,
+    clippy::map_entry
+)]
 //!
 //! The VG API is (like [NanoVG](https://github.com/memononen/nanovg))
 //! loosely modeled on the
 //! [HTML5 Canvas API](https://bucephalus.org/text/CanvasHandbook/CanvasHandbook.html).
-//! 
+//!
 //! The coordinate system’s origin is the top-left corner,
 //! with positive X rightwards, positive Y downwards.
-//! 
+//!
 
 /*
 TODO:
@@ -228,19 +238,10 @@ impl Default for CompositeOperationState {
 }
 
 /// Represents scissor
-#[derive(Copy, Clone, Debug)]
+#[derive(Default, Copy, Clone, Debug)]
 pub struct Scissor {
     transform: Transform2D,
     extent: Option<[f32; 2]>,
-}
-
-impl Default for Scissor {
-    fn default() -> Self {
-        Self {
-            transform: Default::default(),
-            extent: None,
-        }
-    }
 }
 
 /// Determines the shape used to draw the end points of lines.
@@ -336,7 +337,7 @@ where
         let mut canvas = Self {
             width: 0,
             height: 0,
-            renderer: renderer,
+            renderer,
             text_context: Default::default(),
             glyph_atlas: Default::default(),
             emphemeral_glyph_atlas: Default::default(),
@@ -364,7 +365,7 @@ where
         let mut canvas = Self {
             width: 0,
             height: 0,
-            renderer: renderer,
+            renderer,
             text_context: text_context.0,
             glyph_atlas: Default::default(),
             emphemeral_glyph_atlas: Default::default(),
@@ -885,9 +886,11 @@ where
 
             CommandType::ConvexFill { params }
         } else {
-            let mut stencil_params = Params::default();
-            stencil_params.stroke_thr = -1.0;
-            stencil_params.shader_type = ShaderType::Stencil.to_f32();
+            let stencil_params = Params {
+                stroke_thr: -1.0,
+                shader_type: ShaderType::Stencil.to_f32(),
+                ..Default::default()
+            };
 
             let fill_params = Params::new(
                 &self.images,
@@ -915,7 +918,7 @@ where
             cmd.image = self
                 .gradients
                 .lookup_or_add(*stops, &mut self.images, &mut self.renderer)
-                .map_or(None, |id| Some(id));
+                .ok();
         }
 
         // All verts from all shapes are kept in a single buffer here in the canvas.
@@ -1069,7 +1072,7 @@ where
             cmd.image = self
                 .gradients
                 .lookup_or_add(*stops, &mut self.images, &mut self.renderer)
-                .map_or(None, |id| Some(id));
+                .ok();
         }
 
         // All verts from all shapes are kept in a single buffer here in the canvas.
@@ -1257,9 +1260,7 @@ where
             };
 
             let atlas = if bitmap_glyphs && need_direct_rendering {
-                self.emphemeral_glyph_atlas
-                    .get_or_insert_with(|| Default::default())
-                    .clone()
+                self.emphemeral_glyph_atlas.get_or_insert_with(Default::default).clone()
             } else {
                 self.glyph_atlas.clone()
             };
@@ -1309,7 +1310,7 @@ where
             cmd.image = self
                 .gradients
                 .lookup_or_add(*stops, &mut self.images, &mut self.renderer)
-                .map_or(None, |id| Some(id));
+                .ok();
         }
 
         cmd.triangles_verts = Some((self.verts.len(), verts.len()));

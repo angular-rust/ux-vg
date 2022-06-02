@@ -115,8 +115,7 @@ pub(crate) struct Font {
 
 impl Font {
     pub fn new_with_data<T: AsRef<[u8]> + 'static>(data: T, face_index: u32) -> Result<Self, ErrorKind> {
-        let ttf_font =
-            TtfFont::from_slice(data.as_ref().as_ref(), face_index).map_err(|_| ErrorKind::FontParseError)?;
+        let ttf_font = TtfFont::from_slice(data.as_ref(), face_index).map_err(|_| ErrorKind::FontParseError)?;
 
         let units_per_em = ttf_font.units_per_em().ok_or(ErrorKind::FontInfoExtracionError)?;
 
@@ -220,6 +219,6 @@ impl Font {
         };
 
         self.glyph(codepoint)
-            .and_then(|glyph| glyph.path.as_mut().map(|path| GlyphRendering::RenderAsPath(path)))
+            .and_then(|glyph| glyph.path.as_mut().map(GlyphRendering::RenderAsPath))
     }
 }

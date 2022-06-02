@@ -13,7 +13,7 @@ pub use cache::{
 };
 
 // Length proportional to radius of a cubic bezier handle for 90deg arcs.
-const KAPPA90: f32 = 0.5522847493;
+const KAPPA90: f32 = 0.552_284_8; // 0.552_284_7493 for f64
 
 /// Used to specify Solid/Hole when adding shapes to a path.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd)]
@@ -137,7 +137,7 @@ impl Path {
         }
 
         if needs_rebuild {
-            let path_cache = PathCache::new(self.verbs(), &transform, tess_tol, dist_tol);
+            let path_cache = PathCache::new(self.verbs(), transform, tess_tol, dist_tol);
             self.cache = Some((key, path_cache));
         }
 

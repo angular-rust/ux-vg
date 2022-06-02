@@ -233,7 +233,7 @@ impl PathCache {
 
             // If the first and last points are the same, remove the last, mark as closed contour.
             if let (Some(p0), Some(p1)) = (points.last(), points.first()) {
-                if p0.approx_eq(&p1, dist_tol) {
+                if p0.approx_eq(p1, dist_tol) {
                     contour.point_range.end -= 1;
                     contour.closed = true;
                     points = &mut all_points[contour.point_range.clone()];
@@ -607,7 +607,7 @@ impl PathCache {
 
                 for (p0, p1) in contour.point_pairs(&self.points) {
                     if p1.flags.contains(PointFlags::BEVEL | PointFlags::INNERBEVEL) {
-                        bevel_join(&mut contour.stroke, p0, &p1, lw, rw, lu, ru);
+                        bevel_join(&mut contour.stroke, p0, p1, lw, rw, lu, ru);
                     } else {
                         contour
                             .stroke
@@ -655,8 +655,8 @@ impl PathCache {
                     match line_cap_start {
                         LineCap::Butt => butt_cap_start(
                             &mut contour.stroke,
-                            &p0,
-                            &p0,
+                            p0,
+                            p0,
                             stroke_width,
                             -fringe_width * 0.5,
                             fringe_width,
@@ -665,8 +665,8 @@ impl PathCache {
                         ),
                         LineCap::Square => butt_cap_start(
                             &mut contour.stroke,
-                            &p0,
-                            &p0,
+                            p0,
+                            p0,
                             stroke_width,
                             stroke_width - fringe_width,
                             fringe_width,
@@ -674,7 +674,7 @@ impl PathCache {
                             u1,
                         ),
                         LineCap::Round => {
-                            round_cap_start(&mut contour.stroke, &p0, &p0, stroke_width, ncap as usize, u0, u1)
+                            round_cap_start(&mut contour.stroke, p0, p0, stroke_width, ncap as usize, u0, u1)
                         }
                     }
                 }
@@ -684,8 +684,8 @@ impl PathCache {
                         if line_join == LineJoin::Round {
                             round_join(
                                 &mut contour.stroke,
-                                &p0,
-                                &p1,
+                                p0,
+                                p1,
                                 stroke_width,
                                 stroke_width,
                                 u0,
@@ -693,7 +693,7 @@ impl PathCache {
                                 ncap as usize,
                             );
                         } else {
-                            bevel_join(&mut contour.stroke, &p0, &p1, stroke_width, stroke_width, u0, u1);
+                            bevel_join(&mut contour.stroke, p0, p1, stroke_width, stroke_width, u0, u1);
                         }
                     } else {
                         contour.stroke.push(Vertex::new(
@@ -716,8 +716,8 @@ impl PathCache {
                     match line_cap_end {
                         LineCap::Butt => butt_cap_end(
                             &mut contour.stroke,
-                            &p1,
-                            &p0,
+                            p1,
+                            p0,
                             stroke_width,
                             -fringe_width * 0.5,
                             fringe_width,
@@ -726,8 +726,8 @@ impl PathCache {
                         ),
                         LineCap::Square => butt_cap_end(
                             &mut contour.stroke,
-                            &p1,
-                            &p0,
+                            p1,
+                            p0,
                             stroke_width,
                             stroke_width - fringe_width,
                             fringe_width,
@@ -735,7 +735,7 @@ impl PathCache {
                             u1,
                         ),
                         LineCap::Round => {
-                            round_cap_end(&mut contour.stroke, &p1, &p0, stroke_width, ncap as usize, u0, u1)
+                            round_cap_end(&mut contour.stroke, p1, p0, stroke_width, ncap as usize, u0, u1)
                         }
                     }
                 }
@@ -862,13 +862,12 @@ impl PathCache {
                 }
 
                 // Check to see if the corner needs to be beveled.
-                if p1.flags.contains(PointFlags::CORNER) {
-                    if (dmr2 * miter_limit * miter_limit) < 1.0
+                if p1.flags.contains(PointFlags::CORNER)
+                    && ((dmr2 * miter_limit * miter_limit) < 1.0
                         || line_join == LineJoin::Bevel
-                        || line_join == LineJoin::Round
-                    {
-                        p1.flags |= PointFlags::BEVEL;
-                    }
+                        || line_join == LineJoin::Round)
+                {
+                    p1.flags |= PointFlags::BEVEL;
                 }
 
                 if p1.flags.contains(PointFlags::BEVEL | PointFlags::INNERBEVEL) {

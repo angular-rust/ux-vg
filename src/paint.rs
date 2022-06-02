@@ -239,9 +239,10 @@ impl Default for Paint {
 impl Paint {
     /// Creates a new solid color paint
     pub fn color(color: Color) -> Self {
-        let mut new = Self::default();
-        new.flavor = PaintFlavor::Color(color);
-        new
+        Self {
+            flavor: PaintFlavor::Color(color),
+            ..Default::default()
+        }
     }
 
     /// Creates a new image pattern paint.
@@ -266,17 +267,18 @@ impl Paint {
     /// canvas.fill_path(&mut path, fill_paint);
     /// ```
     pub fn image(id: ImageId, cx: f32, cy: f32, width: f32, height: f32, angle: f32, alpha: f32) -> Self {
-        let mut new = Self::default();
-        new.flavor = PaintFlavor::Image {
-            id,
-            cx,
-            cy,
-            width,
-            height,
-            angle,
-            alpha,
-        };
-        new
+        Self {
+            flavor: PaintFlavor::Image {
+                id,
+                cx,
+                cy,
+                width,
+                height,
+                angle,
+                alpha,
+            },
+            ..Default::default()
+        }
     }
 
     /// Creates and returns a linear gradient paint.
@@ -302,17 +304,16 @@ impl Paint {
         start_color: Color,
         end_color: Color,
     ) -> Self {
-        let mut new = Self::default();
-
-        new.flavor = PaintFlavor::LinearGradient {
-            start_x,
-            start_y,
-            end_x,
-            end_y,
-            colors: GradientColors::TwoStop { start_color, end_color },
-        };
-
-        new
+        Self {
+            flavor: PaintFlavor::LinearGradient {
+                start_x,
+                start_y,
+                end_x,
+                end_y,
+                colors: GradientColors::TwoStop { start_color, end_color },
+            },
+            ..Default::default()
+        }
     }
     /// Creates and returns a linear gradient paint with two or more stops.
     ///
@@ -336,17 +337,16 @@ impl Paint {
     /// canvas.fill_path(&mut path, bg);
     /// ```
     pub fn linear_gradient_stops(start_x: f32, start_y: f32, end_x: f32, end_y: f32, stops: &[(f32, Color)]) -> Self {
-        let mut new = Self::default();
-
-        new.flavor = PaintFlavor::LinearGradient {
-            start_x,
-            start_y,
-            end_x,
-            end_y,
-            colors: GradientColors::from_stops(stops),
-        };
-
-        new
+        Self {
+            flavor: PaintFlavor::LinearGradient {
+                start_x,
+                start_y,
+                end_x,
+                end_y,
+                colors: GradientColors::from_stops(stops),
+            },
+            ..Default::default()
+        }
     }
 
     /// Creates and returns a box gradient.
@@ -388,22 +388,21 @@ impl Paint {
         inner_color: Color,
         outer_color: Color,
     ) -> Self {
-        let mut new = Self::default();
-
-        new.flavor = PaintFlavor::BoxGradient {
-            x,
-            y,
-            width,
-            height,
-            radius,
-            feather,
-            colors: GradientColors::TwoStop {
-                start_color: inner_color,
-                end_color: outer_color,
+        Self {
+            flavor: PaintFlavor::BoxGradient {
+                x,
+                y,
+                width,
+                height,
+                radius,
+                feather,
+                colors: GradientColors::TwoStop {
+                    start_color: inner_color,
+                    end_color: outer_color,
+                },
             },
-        };
-
-        new
+            ..Default::default()
+        }
     }
 
     /// Creates and returns a radial gradient.
@@ -439,20 +438,19 @@ impl Paint {
         inner_color: Color,
         outer_color: Color,
     ) -> Self {
-        let mut new = Self::default();
-
-        new.flavor = PaintFlavor::RadialGradient {
-            cx,
-            cy,
-            in_radius,
-            out_radius,
-            colors: GradientColors::TwoStop {
-                start_color: inner_color,
-                end_color: outer_color,
+        Self {
+            flavor: PaintFlavor::RadialGradient {
+                cx,
+                cy,
+                in_radius,
+                out_radius,
+                colors: GradientColors::TwoStop {
+                    start_color: inner_color,
+                    end_color: outer_color,
+                },
             },
-        };
-
-        new
+            ..Default::default()
+        }
     }
 
     /// Creates and returns a multi-stop radial gradient.
@@ -486,17 +484,16 @@ impl Paint {
     /// canvas.fill_path(&mut path, bg);
     /// ```
     pub fn radial_gradient_stops(cx: f32, cy: f32, in_radius: f32, out_radius: f32, stops: &[(f32, Color)]) -> Self {
-        let mut new = Self::default();
-
-        new.flavor = PaintFlavor::RadialGradient {
-            cx,
-            cy,
-            in_radius,
-            out_radius,
-            colors: GradientColors::from_stops(stops),
-        };
-
-        new
+        Self {
+            flavor: PaintFlavor::RadialGradient {
+                cx,
+                cy,
+                in_radius,
+                out_radius,
+                colors: GradientColors::from_stops(stops),
+            },
+            ..Default::default()
+        }
     }
 
     /// Creates a new solid color paint
@@ -669,7 +666,7 @@ impl Paint {
     /// Sets the current rule to be used when filling a path
     ///
     /// [https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule][1]
-    /// 
+    ///
     /// [1]: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule
     pub fn set_fill_rule(&mut self, rule: FillRule) {
         self.fill_rule = rule;

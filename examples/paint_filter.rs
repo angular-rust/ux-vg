@@ -84,12 +84,7 @@ fn main() {
                 if let Ok(size) = canvas.image_size(image_id) {
                     filtered_image = Some(
                         canvas
-                            .create_image_empty(
-                                size.0,
-                                size.1,
-                                vg::PixelFormat::Rgba8,
-                                vg::ImageFlags::PREMULTIPLIED,
-                            )
+                            .create_image_empty(size.0, size.1, vg::PixelFormat::Rgba8, vg::ImageFlags::PREMULTIPLIED)
                             .unwrap(),
                     );
 

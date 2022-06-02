@@ -1,8 +1,5 @@
 use std::collections::BTreeMap;
 
-use imgref;
-use rgb;
-
 use crate::{
     image::ImageStore,
     paint::MultiStopGradient,
