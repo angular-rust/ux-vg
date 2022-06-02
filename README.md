@@ -1,5 +1,3 @@
-# ux-vg
-
 <div align="center">
 
 # ux-vg
