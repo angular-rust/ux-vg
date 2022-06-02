@@ -148,10 +148,14 @@ impl PaintFlavor {
     }
 }
 
+/// Reperesent glyph texture
 #[derive(Copy, Clone, Debug)]
 pub enum GlyphTexture {
+    /// Without texture
     None,
+    /// Masked texture
     AlphaMask(ImageId),
+    /// Color texture
     ColorTexture(ImageId),
 }
 
@@ -598,6 +602,7 @@ impl Paint {
         self.line_join = join;
     }
 
+    /// Set the font
     pub fn set_font(&mut self, font_ids: &[FontId]) {
         self.font_ids = Default::default();
 
@@ -663,7 +668,9 @@ impl Paint {
 
     /// Sets the current rule to be used when filling a path
     ///
-    /// https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule
+    /// [https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule][1]
+    /// 
+    /// [1]: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/fill-rule
     pub fn set_fill_rule(&mut self, rule: FillRule) {
         self.fill_rule = rule;
     }

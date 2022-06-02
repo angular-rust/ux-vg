@@ -61,7 +61,9 @@ pub fn normalize(x: &mut f32, y: &mut f32) -> f32 {
     d
 }
 
-/// 2×3 matrix (2 rows, 3 columns) used for 2D linear transformations. It can represent transformations such as translation, rotation, or scaling.
+/// 2×3 matrix (2 rows, 3 columns) used for 2D linear transformations. 
+/// 
+/// It can represent transformations such as translation, rotation, or scaling.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serialization", derive(Serialize, Deserialize))]
 pub struct Transform2D(pub [f32; 6]);
@@ -73,12 +75,14 @@ impl Transform2D {
         Self([1.0, 0.0, 0.0, 1.0, 0.0, 0.0])
     }
 
+    /// Creates transformation with translation
     pub fn new_translation(x: f32, y: f32) -> Self {
         let mut new = Self::identity();
         new.translate(x, y);
         new
     }
 
+    /// Translate transformation
     pub fn translate(&mut self, tx: f32, ty: f32) {
         // self[0] = 1.0; self[1] = 0.0;
         // self[2] = 0.0; self[3] = 1.0;
@@ -86,6 +90,7 @@ impl Transform2D {
         self[5] = ty;
     }
 
+    /// Scale transformation
     pub fn scale(&mut self, sx: f32, sy: f32) {
         self[0] = sx;
         self[1] = 0.0;
@@ -95,6 +100,7 @@ impl Transform2D {
         self[5] = 0.0;
     }
 
+    /// Rotate transformation
     pub fn rotate(&mut self, a: f32) {
         let cs = a.cos();
         let sn = a.sin();
@@ -107,6 +113,7 @@ impl Transform2D {
         self[5] = 0.0;
     }
 
+    /// Skew transformation with x
     pub fn skew_x(&mut self, a: f32) {
         self[0] = 1.0;
         self[1] = 0.0;
@@ -116,6 +123,7 @@ impl Transform2D {
         self[5] = 0.0;
     }
 
+    /// Skew transformation with y
     pub fn skew_y(&mut self, a: f32) {
         self[0] = 1.0;
         self[1] = a.tan();
@@ -125,6 +133,7 @@ impl Transform2D {
         self[5] = 0.0;
     }
 
+    /// Multiply transformation
     pub fn multiply(&mut self, other: &Self) {
         let t0 = self[0] * other[0] + self[1] * other[2];
         let t2 = self[2] * other[0] + self[3] * other[2];
@@ -137,12 +146,14 @@ impl Transform2D {
         self[4] = t4;
     }
 
+    /// PreMultiply transformation
     pub fn premultiply(&mut self, other: &Self) {
         let mut other = *other;
         other.multiply(self);
         *self = other;
     }
 
+    /// Invert transformation
     pub fn inverse(&mut self) {
         let t = *self;
         let det = t[0] as f64 * t[3] as f64 - t[2] as f64 * t[1] as f64;
@@ -161,18 +172,21 @@ impl Transform2D {
         self[5] = ((t[1] as f64 * t[4] as f64 - t[0] as f64 * t[5] as f64) * invdet) as f32;
     }
 
+    /// Invert transformation and chain
     pub fn inversed(&self) -> Self {
         let mut inv = *self;
         inv.inverse();
         inv
     }
 
+    /// Transfor point with transformation
     pub fn transform_point(&self, sx: f32, sy: f32) -> (f32, f32) {
         let dx = sx * self[0] + sy * self[2] + self[4];
         let dy = sx * self[1] + sy * self[3] + self[5];
         (dx, dy)
     }
 
+    /// Retrieve average scale
     pub fn average_scale(&self) -> f32 {
         let sx = (self[0] * self[0] + self[2] * self[2]).sqrt();
         let sy = (self[1] * self[1] + self[3] * self[3]).sqrt();
@@ -180,12 +194,14 @@ impl Transform2D {
         (sx + sy) * 0.5
     }
 
+    /// Convert transformation to matrix
     pub fn to_mat3x4(self) -> [f32; 12] {
         [
             self[0], self[1], 0.0, 0.0, self[2], self[3], 0.0, 0.0, self[4], self[5], 1.0, 0.0,
         ]
     }
 
+    /// Retrieve hash
     pub fn cache_key(&self) -> u64 {
         let mut hasher = FnvHasher::default();
 

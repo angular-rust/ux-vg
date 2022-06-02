@@ -49,6 +49,7 @@ use framebuffer::Framebuffer;
 mod uniform_array;
 use uniform_array::UniformArray;
 
+/// Represents opengl
 pub struct OpenGl {
     debug: bool,
     antialias: bool,
@@ -65,6 +66,7 @@ pub struct OpenGl {
 }
 
 impl OpenGl {
+    /// Creates an OpenGl struct
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new<F>(load_fn: F) -> Result<Self, ErrorKind>
     where
@@ -127,6 +129,7 @@ impl OpenGl {
         Ok(opengl)
     }
 
+    /// check renderer is OpenGL ES 2.0
     pub fn is_opengles(&self) -> bool {
         self.is_opengles_2_0
     }
@@ -454,7 +457,7 @@ impl OpenGl {
     }
 
     /// Make the "Screen" RenderTarget actually render to a framebuffer object. This is useful when
-    /// embedding femtovg into another program where final composition is handled by an external task.
+    /// embedding VG into another program where final composition is handled by an external task.
     /// The given `framebuffer_object` must refer to a Framebuffer Object created on the current OpenGL
     /// Context, and must have a depth & stencil attachment.
     ///

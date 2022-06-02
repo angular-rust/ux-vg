@@ -61,34 +61,42 @@ impl FontMetrics {
         self.descender
     }
 
+    /// Font height
     pub fn height(&self) -> f32 {
         self.height.round()
     }
 
+    /// Font is regular
     pub fn regular(&self) -> bool {
         self.regular
     }
 
+    /// Font is italic
     pub fn italic(&self) -> bool {
         self.italic
     }
 
+    /// Font is bold
     pub fn bold(&self) -> bool {
         self.bold
     }
 
+    /// Font is oblique
     pub fn oblique(&self) -> bool {
         self.oblique
     }
 
+    /// Font is variable
     pub fn variable(&self) -> bool {
         self.variable
     }
 
+    /// Font weight
     pub fn weight(&self) -> u16 {
         self.weight
     }
 
+    /// Font width
     pub fn width(&self) -> u16 {
         self.width
     }

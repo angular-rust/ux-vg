@@ -42,7 +42,7 @@ fn main() {
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_inner_size(glutin::dpi::PhysicalSize::new(1000, 600))
-        .with_title("femtovg demo");
+        .with_title("vg demo");
 
     let windowed_context = ContextBuilder::new().with_vsync(false).build_windowed(wb, &el).unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };

@@ -18,7 +18,9 @@ const KAPPA90: f32 = 0.5522847493;
 /// Used to specify Solid/Hole when adding shapes to a path.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd)]
 pub enum Solidity {
+    /// Solid shape
     Solid = 1,
+    /// Hole shape
     Hole = 2,
 }
 
@@ -74,8 +76,7 @@ impl Verb {
     }
 }
 
-/// A collection of verbs (`move_to()`, `line_to()`, `bezier_to()`, etc.)
-/// describing one or more contours.
+/// A collection of verbs describing one or more contours.
 #[derive(Default, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Path {
@@ -89,6 +90,7 @@ pub struct Path {
 }
 
 impl Path {
+    /// Create an empty path
     pub fn new() -> Self {
         Self {
             dist_tol: 0.01,
@@ -101,14 +103,17 @@ impl Path {
         std::mem::size_of::<PackedVerb>() * self.verbs.len() + std::mem::size_of::<f32>() * self.coords.len()
     }
 
+    /// Check the verbs is empty
     pub fn is_empty(&self) -> bool {
         self.verbs.is_empty()
     }
 
+    /// Set the distanse tolerance
     pub fn set_distance_tolerance(&mut self, value: f32) {
         self.dist_tol = value;
     }
 
+    /// Retrieve PathIter with current verbs and coords
     pub fn verbs(&self) -> PathIter<'_> {
         PathIter {
             verbs: self.verbs.iter(),

@@ -22,23 +22,32 @@ use crate::{
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct ImageId(pub Index);
 
-/// Image format: `Rgb8`, `Rgba8`, `Gray8`.
+/// Image format.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum PixelFormat {
+    /// RGB 8 pixel format
     Rgb8,
+    /// RGBA 8 pixel format
     Rgba8,
+    /// Gray 8 pixel format
     Gray8,
 }
 
 bitflags! {
     /// Image flags (eg. repeat, flip, mipmaps, etc.)
     pub struct ImageFlags: u32 {
-        const GENERATE_MIPMAPS = 1;     // Generate mipmaps during creation of the image.
-        const REPEAT_X = 1 << 1;        // Repeat image in X direction.
-        const REPEAT_Y = 1 << 2;        // Repeat image in Y direction.
-        const FLIP_Y = 1 << 3;          // Flips (inverses) image in Y direction when rendered.
-        const PREMULTIPLIED = 1 << 4;   // Image data has premultiplied alpha.
-        const NEAREST = 1 << 5;         // Image interpolation is Nearest instead Linear
+        /// Generate mipmaps during creation of the image.
+        const GENERATE_MIPMAPS = 1;
+        /// Repeat image in X direction.
+        const REPEAT_X = 1 << 1;
+        /// Repeat image in Y direction.
+        const REPEAT_Y = 1 << 2;
+        /// Flips (inverses) image in Y direction when rendered.
+        const FLIP_Y = 1 << 3;
+        /// Image data has premultiplied alpha.
+        const PREMULTIPLIED = 1 << 4;
+        /// Image interpolation is Nearest instead Linear
+        const NEAREST = 1 << 5;
     }
 }
 
@@ -46,8 +55,11 @@ bitflags! {
 #[derive(Copy, Clone, Debug)]
 #[non_exhaustive]
 pub enum ImageSource<'a> {
+    /// Rgb 8 image source
     Rgb(ImgRef<'a, RGB8>),
+    /// Rgba 8 image source
     Rgba(ImgRef<'a, RGBA8>),
+    /// Gray 8 image source
     Gray(ImgRef<'a, GRAY8>),
     #[cfg(target_arch = "wasm32")]
     HtmlImageElement(&'a web_sys::HtmlImageElement),
@@ -141,6 +153,7 @@ pub struct ImageInfo {
 }
 
 impl ImageInfo {
+    /// Creates an ImageInfo struct
     pub fn new(flags: ImageFlags, width: usize, height: usize, format: PixelFormat) -> Self {
         Self {
             flags,
@@ -170,11 +183,13 @@ impl ImageInfo {
         self.format
     }
 
+    /// Set format
     pub fn set_format(&mut self, format: PixelFormat) {
         self.format = format;
     }
 }
 
+/// Represents image store
 pub struct ImageStore<T>(Arena<(ImageInfo, T)>);
 
 impl<T> Default for ImageStore<T> {
@@ -184,10 +199,12 @@ impl<T> Default for ImageStore<T> {
 }
 
 impl<T> ImageStore<T> {
+    /// Creates an empty ImageStore struct
     pub fn new() -> Self {
         Self(Arena::new())
     }
 
+    /// Allocate image
     pub fn alloc<R: Renderer<Image = T>>(&mut self, renderer: &mut R, info: ImageInfo) -> Result<ImageId, ErrorKind> {
         let image = renderer.alloc_image(info)?;
 
@@ -213,14 +230,17 @@ impl<T> ImageStore<T> {
         }
     }
 
+    /// Get image by id
     pub fn get(&self, id: ImageId) -> Option<&T> {
         self.0.get(id.0).map(|inner| &inner.1)
     }
 
+    /// Get muttable image by id
     pub fn get_mut(&mut self, id: ImageId) -> Option<&mut T> {
         self.0.get_mut(id.0).map(|inner| &mut inner.1)
     }
 
+    /// Update image
     pub fn update<R: Renderer<Image = T>>(
         &mut self,
         renderer: &mut R,
@@ -237,16 +257,19 @@ impl<T> ImageStore<T> {
         }
     }
 
+    /// Retrieve image info by id
     pub fn info(&self, id: ImageId) -> Option<ImageInfo> {
         self.0.get(id.0).map(|inner| inner.0)
     }
 
+    /// Remove image
     pub fn remove<R: Renderer<Image = T>>(&mut self, renderer: &mut R, id: ImageId) {
         if let Some(image) = self.0.remove(id.0) {
             renderer.delete_image(image.1, id);
         }
     }
 
+    /// Clear images
     pub fn clear<R: Renderer<Image = T>>(&mut self, renderer: &mut R) {
         for (idx, image) in self.0.drain() {
             renderer.delete_image(image.1, ImageId(idx));
@@ -254,11 +277,13 @@ impl<T> ImageStore<T> {
     }
 }
 
-/// ImageFilter allows specifying the type of filter to apply to images with
-/// [`crate::Canvas::filter_image`].
+/// ImageFilter allows specifying the type of filter to apply to images.
 #[derive(Clone, Copy, Debug)]
 #[non_exhaustive]
 pub enum ImageFilter {
     /// The filter shall be a gaussian blur with given sigma as standard deviation.
-    GaussianBlur { sigma: f32 },
+    GaussianBlur {
+        /// Sigma
+        sigma: f32,
+    },
 }

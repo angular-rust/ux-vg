@@ -1,11 +1,15 @@
-/*!
- * The femtovg API is (like [NanoVG](https://github.com/memononen/nanovg))
- * loosely modeled on the
- * [HTML5 Canvas API](https://bucephalus.org/text/CanvasHandbook/CanvasHandbook.html).
- *
- * The coordinate system’s origin is the top-left corner,
- * with positive X rightwards, positive Y downwards.
- */
+// #![doc(html_logo_url = "https://dudochkin-victor.github.io/assets/ux-primitives/logo.svg")]
+
+#![warn(missing_docs)]
+
+//!
+//! The VG API is (like [NanoVG](https://github.com/memononen/nanovg))
+//! loosely modeled on the
+//! [HTML5 Canvas API](https://bucephalus.org/text/CanvasHandbook/CanvasHandbook.html).
+//! 
+//! The coordinate system’s origin is the top-left corner,
+//! with positive X rightwards, positive Y downwards.
+//! 
 
 /*
 TODO:
@@ -98,11 +102,13 @@ pub use path::{
 mod gradient_store;
 use gradient_store::GradientStore;
 
-/// The fill rule used when filling paths: `EvenOdd`, `NonZero` (default).
+/// The fill rule used when filling paths.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FillRule {
+    /// Represents even odd rule
     EvenOdd,
+    /// Represents non zero rule
     NonZero,
 }
 
@@ -166,12 +172,16 @@ pub enum CompositeOperation {
     Xor,
 }
 
-/// Determines how a new ("source") data is displayed against an existing ("destination") data.
+/// Determines how a source data is displayed against destination data.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Hash)]
 pub struct CompositeOperationState {
+    /// Represents source rgb blend factor
     pub src_rgb: BlendFactor,
+    /// Represents source alpha blend factor
     pub src_alpha: BlendFactor,
+    /// Represents destination rgb blend factor
     pub dst_rgb: BlendFactor,
+    /// Represents destination alpha blend factor
     pub dst_alpha: BlendFactor,
 }
 
@@ -217,6 +227,7 @@ impl Default for CompositeOperationState {
     }
 }
 
+/// Represents scissor
 #[derive(Copy, Clone, Debug)]
 pub struct Scissor {
     transform: Transform2D,
@@ -232,8 +243,7 @@ impl Default for Scissor {
     }
 }
 
-/// Determines the shape used to draw the end points of lines:
-/// `Butt` (default), `Round`, `Square`.
+/// Determines the shape used to draw the end points of lines.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum LineCap {
@@ -253,7 +263,6 @@ impl Default for LineCap {
 }
 
 /// Determines the shape used to join two line segments where they meet.
-/// `Miter` (default), `Round`, `Bevel`.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum LineJoin {
@@ -433,6 +442,7 @@ where
         }
     }
 
+    /// Creates streenshot
     pub fn screenshot(&mut self) -> Result<ImgVec<RGBA8>, ErrorKind> {
         self.flush();
         self.renderer.screenshot()
@@ -551,10 +561,12 @@ where
         Ok(id)
     }
 
+    /// Retrieve image by id
     pub fn get_image(&self, id: ImageId) -> Option<&T::Image> {
         self.images.get(id)
     }
 
+    /// Retrieve mutable image by id
     pub fn get_image_mut(&mut self, id: ImageId) -> Option<&mut T::Image> {
         self.images.get_mut(id)
     }

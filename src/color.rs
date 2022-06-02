@@ -4,9 +4,13 @@ use std::u8;
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Color {
+    /// Red component of color
     pub r: f32,
+    /// Green component of color
     pub g: f32,
+    /// Blue component of color
     pub b: f32,
+    /// Alpha component of color
     pub a: f32,
 }
 
@@ -105,6 +109,7 @@ impl Color {
         self.a = a;
     }
 
+    /// Create premultiplied version of color
     pub fn premultiplied(self) -> Self {
         Self {
             r: self.r * self.a,
@@ -114,10 +119,12 @@ impl Color {
         }
     }
 
+    /// Convert to slice
     pub fn to_array(self) -> [f32; 4] {
         [self.r, self.g, self.b, self.a]
     }
 
+    /// Check the color is black
     pub fn is_black(&self) -> bool {
         self.r == 0.0 && self.g == 0.0 && self.b == 0.0 && self.a == 0.0
     }

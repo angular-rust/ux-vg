@@ -11,21 +11,36 @@ use std::io;
 #[derive(Debug)]
 #[non_exhaustive]
 pub enum ErrorKind {
+    /// Unknown error
     UnknownError,
+    /// General error
     GeneralError(String),
+    /// Image error
     #[cfg(feature = "image-loading")]
     ImageError(::image::ImageError),
+    /// IO error
     IoError(io::Error),
+    /// Font parse error
     FontParseError,
+    /// Not found error
     NoFontFound,
+    /// Font info extraction error
     FontInfoExtracionError,
+    /// Font size too large for atlas error
     FontSizeTooLargeForAtlas,
+    /// Shader compile error
     ShaderCompileError(String),
+    /// Shader link error
     ShaderLinkError(String),
+    /// Render target error
     RenderTargetError(String),
+    /// Image Id not found error
     ImageIdNotFound,
+    /// Image update out of bounds error
     ImageUpdateOutOfBounds,
+    /// Image update with different format error
     ImageUpdateWithDifferentFormat,
+    /// Unsuported image format error
     UnsuportedImageFromat,
 }
 

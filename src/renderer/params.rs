@@ -15,28 +15,47 @@ use crate::{
 
 use super::ShaderType;
 
+/// Represents params
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Params {
+    /// Scissor matxix
     pub scissor_mat: [f32; 12],
+    /// Paint matxix
     pub paint_mat: [f32; 12],
+    /// Inner column
     pub inner_col: [f32; 4],
+    /// Outer column
     pub outer_col: [f32; 4],
+    /// Scissor extent
     pub scissor_ext: [f32; 2],
+    /// Scissor scale
     pub scissor_scale: [f32; 2],
+    /// Extent
     pub extent: [f32; 2],
+    /// Radius
     pub radius: f32,
+    /// Feather
     pub feather: f32,
+    /// Stroke multipier
     pub stroke_mult: f32,
+    /// Stroke threshold
     pub stroke_thr: f32,
+    /// Text type
     pub tex_type: f32,
+    /// Shader type
     pub shader_type: f32,
+    /// Glyph texture type
     pub glyph_texture_type: f32, // 0 -> no glyph rendering, 1 -> alpha mask, 2 -> color texture
+    /// Image blud filter direction
     pub image_blur_filter_direction: [f32; 2],
+    /// Image blur filter sigma
     pub image_blur_filter_sigma: f32,
+    /// Image blur filter coefficient
     pub image_blur_filter_coeff: [f32; 3],
 }
 
 impl Params {
+    /// Creates an Params struct
     pub fn new<T>(
         images: &ImageStore<T>,
         paint: &Paint,

@@ -61,7 +61,7 @@ fn main() {
 
         let wb = WindowBuilder::new()
             .with_inner_size(winit::dpi::PhysicalSize::new(1000, 600))
-            .with_title("femtovg demo");
+            .with_title("vg demo");
 
         //let windowed_context = ContextBuilder::new().with_gl(GlRequest::Specific(Api::OpenGlEs, (2, 0))).with_vsync(false).build_windowed(wb, &el).unwrap();
         //let windowed_context = ContextBuilder::new().with_vsync(false).with_multisampling(8).build_windowed(wb, &el).unwrap();

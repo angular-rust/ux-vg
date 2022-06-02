@@ -62,8 +62,7 @@ const LRU_CACHE_CAPACITY: usize = 1000;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct FontId(Index);
 
-/// Text baseline vertical alignment:
-/// `Top`, `Middle`, `Alphabetic` (default), `Bottom`.
+/// Text baseline vertical alignment.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serialization", derive(Serialize, Deserialize))]
 pub enum Baseline {
@@ -73,7 +72,7 @@ pub enum Baseline {
     Middle,
     /// The text baseline is the normal alphabetic baseline. Default value.
     Alphabetic,
-    // The text baseline is the bottom of the bounding box.
+    /// The text baseline is the bottom of the bounding box.
     Bottom,
 }
 
@@ -83,7 +82,7 @@ impl Default for Baseline {
     }
 }
 
-/// Text horizontal alignment: `Left` (default), `Center`, `Right`.
+/// Text horizontal alignment.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serialization", derive(Serialize, Deserialize))]
 pub enum Align {
@@ -205,8 +204,9 @@ pub(crate) struct FontTexture {
     pub(crate) image_id: ImageId,
 }
 
-/// TextContext provides functionality for text processing in femtovg. You can
-/// add fonts using the [`Self::add_font_file()`], [`Self::add_font_mem()`] and
+/// TextContext provides functionality for text processing in VG. 
+/// 
+/// You can /// add fonts using the [`Self::add_font_file()`], [`Self::add_font_mem()`] and
 /// [`Self::add_font_dir()`] functions. For each registered font a [`FontId`] is
 /// returned.
 ///
@@ -480,10 +480,13 @@ impl TextContextImpl {
 /// Result of a shaping run.
 #[derive(Clone, Default, Debug)]
 pub struct TextMetrics {
+    /// Represents x position
     pub x: f32,
+    /// Represents y position
     pub y: f32,
     width: f32,
     height: f32,
+    /// Represents vector of ShapedGlyph's
     pub glyphs: Vec<ShapedGlyph>,
     pub(crate) final_byte_index: usize,
 }
